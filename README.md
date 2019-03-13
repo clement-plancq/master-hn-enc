@@ -1,3 +1,6 @@
 # Master Humanités Numériques — PSL
 
-Supports pour les séances TAL des 13 et 20 mars 2019
+## Mercredi 13 mars 2019
+* [slides](slides-20190313.html)
+* [notebook export noSketchEngine](nosk-adj-nc.ipynb)
+* [notebook gensim](gensim.ipynb)
