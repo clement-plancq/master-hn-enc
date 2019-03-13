@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Clément Plancq">
+  <title>Master HN — PSL</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="./reveal.js/css/reveal.css">
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="./reveal.js/css/theme/night.css" id="theme">
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? './reveal.js/css/print/pdf.css' : './reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="./reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Master HN — PSL</h1>
+  <p class="subtitle">Traitement automatique des langues</p>
+  <p class="author">Clément Plancq</p>
+  <p class="date">12 mars 2019</p>
+</section>
+
+<section class="slide level2">
+
+<ul>
+<li>Outils de la linguistique de corpus</li>
+<li>Outils de TAL</li>
+<li><em>word embeddings</em></li>
+</ul>
+<p>👨‍💻 Formats de données annotées<br />
+👩‍💻 Manipulation de données en Python</p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>Comment utiliser des données textuelles pour confirmer ses hypothèses ?</li>
+<li>Travail sur la position de l’adjectif épithète en français</li>
+</ul>
+<aside class="notes">
+<p>français langue SVO. Pas de désinence casuelle, contrainte intermédiaire sur l’ordre des mots<br />
+la position de l’épithète par rapport au nom est une difficulté pour les apprenants L2 par ex.</p>
+</aside>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><p>« et, selon que vous serez au pouvoir d’une <span style="color:blue">créature méchante</span> ou d’un noble coeur, vous ne sortirez de cette effrayante machine que défiguré par la honte ou transfiguré par la passion. »<br />
+<em>Les Misérables (1881)</em></p></li>
+<li><p>« Le tout pour avoir dressé un lit de sangle dans un <span style="color:blue">méchant bouge</span> sous les combles ! »<br />
+<em>L’Homme qui rit (1869)</em></p></li>
+</ul>
+<aside class="notes">
+<p>animé + méchant<br />
+méchant + inanimé<br />
+pas forcément la même acception de méchant<br />
+sens différents dans tlfi + indication ante ou post-position</p>
+</aside>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><p>« Tantôt c’était un marmot sournois qui risquait sa peau et ses os pour avoir le <span style="color:blue">plaisir ineffable</span> d’enfoncer une épingle dans la bosse de Quasimodo. »<br />
+<em>Notre-Dame de Paris (1832)</em></p></li>
+<li><p>« D’un côté des miasmes, de l ’autre un <span style="color:blue">ineffable parfum</span>. »<br />
+<em>Les Misérables (1881)</em></p></li>
+</ul>
+<aside class="notes">
+<p>variation stylistique plutôt que sémantique</p>
+</aside>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><span style="color:gray">Comment utiliser des données textuelles pour confirmer ses hypothèses ?</span></li>
+<li><span style="color:gray">Travail sur la position de l’adjectif épithète en français.</span></li>
+<li>Plus précisément sur les adjectifs mobiles (ou alternants)</li>
+<li>Pour quels adjectifs le changement de position (<em>ante</em>/<em>post</em>) est-il associé à un changement de sens ?</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="tp-identifier-les-adjectifs-mobiles-dans-un-corpus">TP : identifier les adjectifs mobiles dans un corpus</h4>
+<ul>
+<li>Corpus : <a href="http://wacky.sslmit.unibo.it/doku.php?id=corpora">frWaC</a>
+<ul>
+<li>collecté sur des pages web du domaine <code>.fr</code></li>
+<li>1,3 milliards de mots</li>
+<li>annoté en POS + lemme avec TreeTagger</li>
+</ul></li>
+<li>Outil : <a href="">NoSketchEngine</a>
+<ul>
+<li>noyau libre de SketchEngine</li>
+<li>concordancier pour corpus annotés en POS + lemme</li>
+</ul></li>
+</ul>
+<p><a href="https://www.clarin.si/noske/run.cgi/corp_info?corpname=frwac">https://www.clarin.si/noske/run.cgi/corp_info?corpname=frwac</a></p>
+</section>
+<section id="une-phrase-étiquetée" class="slide level2">
+<h2>Une phrase étiquetée</h2>
+<pre><code>Le  le  DET     
+tout    tout    NC  
+pour    pour    P       
+avoir   avoir   VINF    
+dressé  dresser VPP 
+un  un  DET     
+lit lit NC  
+de  de  P   
+sangle  sangle  NC  
+dans    dans    P       
+un  un  DET     
+méchant méchant ADJ 
+bouge   bouge   NC  
+sous    sous    P   
+les le  DET     
+combles comble  NC  
+!   !   PONCT   </code></pre>
+</section>
+<section class="slide level2">
+
+<h4 id="tp-identifier-les-adjectifs-mobiles-dans-le-frwac">TP : identifier les adjectifs mobiles dans le frWaC</h4>
+<ol type="1">
+<li>Interroger le corpus
+<ol type="i">
+<li>Trouver les adjectifs <em>ante</em> et les exporter</li>
+<li>Trouver les adjectifs <em>post</em> et les exporter</li>
+</ol></li>
+<li>Trouver l’intersection des deux listes d’adjectifs</li>
+</ol>
+<p>🛠️ CQL (Corpus Query Language) + Python</p>
+</section>
+<section class="slide level2">
+
+<h3 id="cql-corpus-query-language">CQL (Corpus Query Language)</h3>
+<ul>
+<li><p><a href="http://cwb.sourceforge.net/files/CQP_Tutorial/CQP_Tutorial.html">Documentation</a></p></li>
+<li>Exemples d’outils de recherche utilisant le langage CQL :
+<ul>
+<li><a href="http://cwb.sourceforge.net">IMS Corpus Workbench</a> (outil en ligne de commande) et <a href="https://cqpweb.lancs.ac.uk/">CQPWeb</a></li>
+<li><a href="http://opus.lingfil.uu.se/">Opus search interfaces</a></li>
+<li><a href="http://www.sketchengine.co.uk/">Sketch Engine</a> et <a href="http://nl.ijs.si/noske/index-en.html">NoSketch Engine</a></li>
+<li><a href="http://www.frantext.fr/">Frantext</a></li>
+<li><a href="http://textometrie.ens-lyon.fr/">TXM</a> (Logiciel client et <a href="http://portal.textometrie.org/demo/">portail web</a> )</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="cql-corpus-query-language-1">CQL (Corpus Query Language)</h3>
+<ul>
+<li>Corpus outillés non CQL
+<ul>
+<li><a href="http://www.projet-pfc.net/">Phonologie du français contemporain</a></li>
+<li><a href="http://corpusdelaparole.huma-num.fr/">Corpus de la parole</a></li>
+<li><a href="http://corpus.byu.edu/coca/">Corpus of Contemporary American English</a></li>
+<li><a href="https://repository.ortolang.fr/api/content/cefc-orfeo/5/documentation/site-orfeo/index.html">Corpus d’Études du Français Contemporain</a></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="cql-corpus-query-language-2">CQL (Corpus Query Language)</h3>
+<h4 id="requête-sur-des-champs">Requête sur des champs</h4>
+<pre><code>    [word = &quot;cumulard&quot;]
+    [tag = &quot;Nc&quot;]
+    [lemma = &quot;être&quot;]
+    [] (mot quelconque)</code></pre>
+<h4 id="recherche-de-séquences">Recherche de séquences</h4>
+<pre><code>    [word=&quot;voilà&quot;] []
+    [lemma=&quot;avoir&quot;] [tag=&quot;V&quot;]</code></pre>
+<aside class="notes">
+<p>auxiliaire avoir + auxiliaire être + verbe nom + nom “truc” + de + nom</p>
+</aside>
+</section>
+<section class="slide level2">
+
+<h3 id="cql-corpus-query-language-3">CQL (Corpus Query Language)</h3>
+<h4 id="support-des-expressions-régulières">Support des expressions régulières</h4>
+<pre><code>    [word = &quot;[aA]b.+&quot;] 
+    [lemma = &quot;.+eur&quot;] 
+    [tag=&quot;ADV&quot;] []{1,3} [tag=&quot;V&quot;]</code></pre>
+<h4 id="opérateurs-booléens">Opérateurs booléens</h4>
+<pre><code>    &amp; : conjonction (et)
+    | : disjonction (ou)
+    ! : n&amp;eacute;gation (non)</code></pre>
+<pre><code>    [word=&quot;été&quot; &amp; tag!=&quot;V&quot;]
+    [lemma=&quot;mal&quot; &amp; (tag=&quot;ADV&quot; | tag=&quot;A&quot;)]</code></pre>
+<aside class="notes">
+<p>noms avec suffixe ‘ité’ noms avec 2 ‘z’</p>
+</aside>
+</section>
+<section class="slide level2">
+
+<h3 id="cql-corpus-query-language-4">CQL (Corpus Query Language)</h3>
+<h4 id="utilisation-de-la-structure-des-documents">Utilisation de la structure des documents</h4>
+<pre><code>&lt;s&gt; [tag=&quot;V&quot;]
+[word=&quot;\?&quot;] &lt;/s&gt;
+[tag=&quot;V&quot;] []{4} [tag=&quot;V&quot;] within s </code></pre>
+<aside class="notes">
+<p>La structuration des textes est différente selon les corpus et leur encodage mais <em>a minima</em> on trouve les marques de début de pharse et de fin de phrase.</p>
+<p>CQL permet également de limiter le contexte de recherche à la phrase <code>within s</code> (ne fonctionne pas avec tous les outils).</p>
+<p>‘quoi’ en fin de phrase</p>
+</aside>
+</section>
+<section class="slide level2">
+
+<h4 id="tp-identifier-les-adjectifs-mobiles-dans-le-frwac-1">TP : identifier les adjectifs mobiles dans le frWaC</h4>
+<ol type="1">
+<li>Interroger le corpus
+<ol type="i">
+<li>Trouver les adjectifs <em>ante</em> et les exporter</li>
+<li>Trouver les adjectifs <em>post</em> et les exporter</li>
+</ol></li>
+<li>Trouver l’intersection des deux listes d’adjectifs</li>
+</ol>
+<p>➡️ CQL (Corpus Query Language) + Python</p>
+</section>
+<section id="les-adjectifs-mobiles" class="slide level2">
+<h2>Les adjectifs mobiles</h2>
+<table>
+<thead>
+<tr class="header">
+<th>adj</th>
+<th>occurrences</th>
+<th>ante</th>
+<th>post</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>nouveau</td>
+<td>7420</td>
+<td>7342</td>
+<td>78</td>
+</tr>
+<tr class="even">
+<td>autre</td>
+<td>7309</td>
+<td>7280</td>
+<td>29</td>
+</tr>
+<tr class="odd">
+<td>grand</td>
+<td>6698</td>
+<td>6658</td>
+<td>40</td>
+</tr>
+<tr class="even">
+<td>petit</td>
+<td>4624</td>
+<td>4599</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<td>bon</td>
+<td>4426</td>
+<td>4382</td>
+<td>44</td>
+</tr>
+<tr class="even">
+<td>même</td>
+<td>4252</td>
+<td>4009</td>
+<td>243</td>
+</tr>
+<tr class="odd">
+<td>dernier</td>
+<td>2927</td>
+<td>2719</td>
+<td>208</td>
+</tr>
+<tr class="even">
+<td>différen</td>
+<td>t 2400</td>
+<td>2376</td>
+<td>24</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="word-embeddings" class="slide level2">
+<h2>Word embeddings</h2>
+<p>« You shall know a word by the company it keeps »<br />
+<em>Firth, J. R. 1957</em></p>
+</section>
+<section id="word-embeddings-1" class="slide level2">
+<h2>Word embeddings</h2>
+<ul>
+<li>développements récents de la sémantique distributionnelle</li>
+<li>modèle de langage, apprentissage (<em>machine learning</em>)</li>
+<li>les mots sont représentés par des <span style="color:blue">vecteurs numériques</span> (probabilités d’apparition du mot dans un contexte donné)</li>
+<li>possibilité de faire du calcul algébrique sur les vecteurs<br />
+queen ≈ king − man + woman</li>
+</ul>
+</section>
+<section id="word-embeddings-2" class="slide level2">
+<h2>Word embeddings</h2>
+<ul>
+<li>nécessite beaucoup de données mais des données brutes</li>
+<li>Word2vec (T. Mikolov), GloVe (Stanford University), fastText (Facebook)</li>
+<li>mise à disposition de modèles déjà entraînés sur wikipedia (<a href="https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md">90 langues disponibles</a>)</li>
+</ul>
+</section>
+<section id="word-embeddings-3" class="slide level2">
+<h2>Word embeddings</h2>
+<ul>
+<li>Word2vec donne pour chaque mot d’un corpus des mesures de similarité</li>
+<li>la similarité ne qualifie pas la relation sémantique entre deux mots</li>
+<li>antonymie, synonymie, hyperonymie, hyponymie</li>
+<li>pas de prise en compte de l’ambiguïté dans Word2vec mais traitée dans les recherches récentes (OOV, subword level)</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>Données
+<ul>
+<li>corpus</li>
+<li>lexiques</li>
+</ul></li>
+<li>Outils
+<ul>
+<li>outils d’interrogation de corpus + langages de requêtes</li>
+<li>tableurs puis scripts (ou base de données)</li>
+<li>modélisation et méthodes statistiques</li>
+<li>visualisation</li>
+</ul></li>
+</ul>
+</section>
+    </div>
+  </div>
+
+  <script src="./reveal.js/lib/js/head.min.js"></script>
+  <script src="./reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: false,
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: false,
+        maxScale: 1.2,
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: './reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: './reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: './reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
