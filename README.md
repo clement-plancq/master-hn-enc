@@ -1,9 +1,8 @@
 # Master Humanités Numériques — PSL
 
-## Mercredi 13 mars 2019
-* [slides](slides-20190313.html)
-* [notebook export noSketchEngine](nosk-adj-nc.ipynb)
-* [notebook gensim](gensim.ipynb)
+## Mercredi 11 mars 2020
+* [notebook spacy](hn-enc-tal-20200311.ipynb)
 
-## Mercredi 20 mars 2019
-* [slides](slides-20190320.html)
+
+## Mercredi 18 mars 2020
+* word embeddings
