@@ -5,4 +5,4 @@
 
 
 ## Mercredi 18 mars 2020
-* word embeddings
+* word embeddings [notebook](notebook-word-embedding-enc.ipynb), [html](notebook-word-embedding-enc.html)
